@@ -1,4 +1,4 @@
-// Import de la feuille de style
-import './assets/css/style.css';
+import app from './AppCamping/App';
 
-console.log( 'Allez, au boulot ! 🚀' );
+// On démarre l'application
+app.start();
