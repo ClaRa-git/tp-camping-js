@@ -13,6 +13,7 @@ class App {
 
     // Message à afficher pour l'information du statut de la requête
     message = '';
+    
 
     /**
      * Démarreur de l'application
@@ -55,6 +56,52 @@ class App {
             this.renderUI();
         } catch (error) {
             console.error("Erreur lors de la récupération des données :", error);
+        }
+    }
+
+    /**
+     * Méthode pour mettre à jour l'état de propreté d'une réservation
+     * @param {int} id 
+     * @param {boolean} updateData
+     */
+    async patchReservation(id, updateData) {
+        console.log("Mise à jour partielle de la réservation :", id, updateData);
+        try {
+
+            // On envoie les données à l'API via une requête PATCH
+            const response = await fetch(`${DATA_URL}/${id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updateData),
+            });
+    
+            // On vérifie si la requête a réussi
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP! Statut: ${response.status}`);
+            }
+    
+            // On récupère les données
+            const result = await response.json();
+            console.log("Réservation mise à jour partiellement :", result);
+            
+            this.message = result.message;
+
+            // On efface le body pour le recharger
+            document.body.innerHTML = '';
+    
+            // Rafraîchir la liste après modification
+            await this.initListe();
+
+            // On recharge l'interface après 5 secondes pour effacer le message
+            setTimeout(() => {
+                document.body.innerHTML = '';
+                this.message = '';
+                this.initListe();
+            }, 5000);
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour partielle :", error);
         }
     }
 
@@ -266,6 +313,8 @@ class App {
      */
     handlerCheck( event ) {
         console.log( 'Check' );
+        const id = event.target.dataset.id;
+        app.patchReservation(id, { isClean: 1 });
     }
 }
 
