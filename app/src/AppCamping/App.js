@@ -21,6 +21,7 @@ class App {
     start() {
         console.log( 'Application démarrée ...' );
 
+        // On initialise les listes
         this.initListe();      
         
         console.log("Données récupérées, affichage de l'interface...");
@@ -154,6 +155,7 @@ class App {
             </main>
         */
 
+        // Création du header
         const elHeader = document.createElement( 'header' );
         elHeader.classList.add( 'text-center' );
         elHeader.classList.add( 'mb-4' );
@@ -161,9 +163,11 @@ class App {
         elHeader.classList.add( 'border-bottom' );
         elHeader.classList.add( 'border-3' );
 
+        // Création du titre
         const elTitle = document.createElement( 'h1' );
         elTitle.textContent = 'Camping';
 
+        // Ajout du titre dans le header
         elHeader.append( elTitle );
 
         // Si un message est présent, on l'affiche
@@ -175,8 +179,11 @@ class App {
             document.body.append( elMessage );
         }
 
+        // Création du main
         const elMain = document.createElement( 'main' );
 
+        // Création du tableau des entrées
+        // Titre
         const elTitleEntrees = document.createElement( 'h2' );
         elTitleEntrees.classList.add( 'mt-4' );
         elTitleEntrees.classList.add( 'mb-4' );
@@ -185,12 +192,14 @@ class App {
 
         elMain.append( elTitleEntrees );
 
+        // Tableau
         const elTableEntrees = document.createElement( 'table' );
         elTableEntrees.classList.add( 'table' );
         elTableEntrees.classList.add( 'table-bordered' );
 
         const elTheadEntrees = document.createElement( 'thead' );
 
+        // En-tête du tableau
         elTheadEntrees.innerHTML = `
             <tr>
                 <th>Date d'entrée</th>
@@ -213,6 +222,7 @@ class App {
             let dateStart = entree.dateStart.date.split('.')[0];
             let dateEnd = entree.dateEnd.date.split('.')[0];
 
+            // On remplit les cellules du tableau
             elTr.innerHTML = `
                 <td>${dateStart}</td>
                 <td>${dateEnd}</td>
@@ -221,6 +231,7 @@ class App {
                 <td>${proprete}</td>
             `;
 
+            // Si la location n'est pas propre, on ajoute un bouton pour le check
             if(entree.isClean == 0) {
                 elTr.innerHTML += `
                     <td>
@@ -231,6 +242,7 @@ class App {
                 const elBtnCheckIn = elTr.querySelector( '#check-button-in' );
                 const idIn = entree.roomId;
                 elBtnCheckIn.dataset.id = idIn;
+                // On ajoute un écouteur d'événement sur le bouton
                 elBtnCheckIn.addEventListener( 'click', this.handlerCheck.bind( this) );
             }
 
@@ -240,7 +252,8 @@ class App {
         elTableEntrees.append( elTheadEntrees, elTbodyEntrees );
         elMain.append( elTableEntrees );
 
-
+        // Création du tableau des sorties
+        // Titre
         const elTitleSorties = document.createElement( 'h2' );
         elTitleSorties.classList.add( 'mt-4' );
         elTitleSorties.classList.add( 'mb-4' );
@@ -249,12 +262,14 @@ class App {
 
         elMain.append( elTitleSorties );
 
+        // Tableau
         const elTableSorties = document.createElement( 'table' );
         elTableSorties.classList.add( 'table' );
         elTableSorties.classList.add( 'table-bordered' );
 
         const elTheadSorties = document.createElement( 'thead' );
 
+        // En-tête du tableau
         elTheadSorties.innerHTML = `
             <tr>
                 <th>Date d'entrée</th>
@@ -277,6 +292,7 @@ class App {
             let dateStart = sortie.dateStart.date.split('.')[0];
             let dateEnd = sortie.dateEnd.date.split('.')[0];
 
+            // On remplit les cellules du tableau
             elTr.innerHTML = `
                 <td>${dateStart}</td>
                 <td>${dateEnd}</td>
@@ -285,6 +301,7 @@ class App {
                 <td>${proprete}</td>
             `;
             
+            // Si la location n'est pas propre, on ajoute un bouton pour le check
             if(sortie.isClean == 0) {
                 elTr.innerHTML += `
                     <td>
@@ -295,11 +312,14 @@ class App {
                 const elBtnCheckOut = elTr.querySelector( '#check-button-out' );
                 const idOut = sortie.roomId;
                 elBtnCheckOut.dataset.id = idOut;
+                // On ajoute un écouteur d'événement sur le bouton
                 elBtnCheckOut.addEventListener( 'click', this.handlerCheck.bind( this) );
             }
 
             elTbodySorties.append( elTr );
         } );
+
+        // On ajoute les éléments au DOM
 
         elTableSorties.append( elTheadSorties, elTbodySorties );
         elMain.append( elTableSorties );
@@ -313,7 +333,11 @@ class App {
      */
     handlerCheck( event ) {
         console.log( 'Check' );
+
+        // On récupère l'id de la location
         const id = event.target.dataset.id;
+
+        // On met à jour l'état de propreté de la location
         app.patchReservation(id, { isClean: 1 });
     }
 }
