@@ -33,27 +33,27 @@ start() {
 */
 async initListe() {
     try {
-        // On récupère les données depuis l'API
+        // Récupération des données depuis l'API
         const response = await fetch(DATA_URL);
 
-        // On vérifie si la requête a réussi
+        // Vérification de si la requête a réussi
         if (!response.ok) {
             throw new Error(`Erreur HTTP! Statut: ${response.status}`);
         }
 
-        // On récupère les données
+        // Récupération des données
         const data = await response.json();
 
-        // On stocke les données dans les listes
+        // Stockage des données dans les listes
         this.listeEntrees = data.reservationsStart;
         this.listeSorties = data.reservationsEnd;
 
-        // On récupère le message si la clé existe
+        // Récupération du message si la clé existe
         if (data.message) {
             this.message.textContent = data.message;
         }
 
-        // Une fois les données récupérées, on met à jour l'UI
+        // Une fois les données récupérées, mise à jour l'UI
         this.renderUI();
     } catch (error) {
         console.error("Erreur lors de la récupération des données :", error);
@@ -69,7 +69,7 @@ async patchReservation(id, updateData) {
     console.log("Mise à jour partielle de la réservation :", id, updateData);
     try {
 
-        // On envoie les données à l'API via une requête PATCH
+        // Envoi des données à l'API via une requête PATCH
         const response = await fetch(`${DATA_URL}/${id}`, {
             method: "PATCH",
             headers: {
@@ -78,24 +78,24 @@ async patchReservation(id, updateData) {
             body: JSON.stringify(updateData),
         });
 
-        // On vérifie si la requête a réussi
+        // Vérification de si la requête a réussi
         if (!response.ok) {
             throw new Error(`Erreur HTTP! Statut: ${response.status}`);
         }
 
-        // On récupère les données
+        // Rcupération des données
         const result = await response.json();
         console.log("Réservation mise à jour partiellement :", result);
         
         this.message = result.message;
 
-        // On efface le body pour le recharger
+        // Effacement du body pour le recharger
         document.body.innerHTML = '';
 
-        // Rafraîchir la liste après modification
+        // Rafraîchissement de la liste après modification
         await this.initListe();
 
-        // On recharge l'interface après 5 secondes pour effacer le message
+        // Rechargement de l'interface après 5 secondes pour effacer le message
         setTimeout(() => {
             document.body.innerHTML = '';
             this.message = '';
@@ -113,22 +113,21 @@ async patchReservation(id, updateData) {
 handlerCheck( event ) {
     console.log( 'Check' );
 
-    // On récupère l'id de la location
+    // Récupération de l'id de la location
     const id = event.target.dataset.id;
 
-    // On met à jour l'état de propreté de la location
+    // Mise à jour de l'état de propreté de la location
     app.patchReservation(id, { isClean: 1 });
 }
 
 renderTable(elMain, id, datas) {
-        // Tableau
+        // Création du tableau
         const elTable = document.createElement( 'table' );
         elTable.classList.add( 'table' );
         elTable.classList.add( 'table-bordered' );
 
-        const elThead = document.createElement( 'thead' );
-
         // En-tête du tableau
+        const elThead = document.createElement( 'thead' );
         elThead.innerHTML = `
             <tr>
                 <th>Date d'entrée</th>
@@ -140,18 +139,21 @@ renderTable(elMain, id, datas) {
             </tr>
         `;
 
+        // Création du corps du tableau
         const elTbody = document.createElement( 'tbody' );
         elTbody.id = id;
 
-        // On ajoute les lignes du tableau
+        // Ajout des lignes du tableau
         datas.forEach( data => {
             const elTr = document.createElement( 'tr' );
 
             let proprete = data.isClean == 1 ? 'Propre' : 'Sale';
+
+            // Formatage des dates
             let dateStart = data.dateStart.date.split('.')[0];
             let dateEnd = data.dateEnd.date.split('.')[0];
 
-            // On remplit les cellules du tableau
+            // Remplissage des cellules du tableau
             elTr.innerHTML = `
                 <td>${dateStart}</td>
                 <td>${dateEnd}</td>
@@ -160,7 +162,7 @@ renderTable(elMain, id, datas) {
                 <td>${proprete}</td>
             `;
 
-            // Si la location n'est pas propre, on ajoute un bouton pour le check
+            // Si la location n'est pas propre, ajout d'un bouton pour le check
             if(data.isClean == 0) {
             const elTd = document.createElement( 'td' );
 
@@ -171,7 +173,8 @@ renderTable(elMain, id, datas) {
 
             const idIn = data.roomId;
             elBtnCheckIn.dataset.id = idIn;
-            // On ajoute un écouteur d'événement sur le bouton
+
+            // Ajout d'un écouteur d'événement sur le bouton
             elBtnCheckIn.addEventListener( 'click', this.handlerCheck.bind( this) );
 
             elTd.append( elBtnCheckIn );
@@ -250,7 +253,7 @@ renderUI() {
     // Ajout du titre dans le header
     elHeader.append( elTitle );
 
-    // Si un message est présent, on l'affiche
+    // Si un message est présent, il est affiché
     if (this.message.length > 0) {
         const elMessage = document.createElement( 'p' );
         elMessage.classList.add( 'alert' );
