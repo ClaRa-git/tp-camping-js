@@ -11,6 +11,9 @@ class App {
     // Liste des réservations de sortie
     listeSorties = [];
 
+    // Message à afficher pour l'information du statut de la requête
+    message = '';
+
     /**
      * Démarreur de l'application
      */
@@ -28,7 +31,27 @@ class App {
     */
     async initListe() {
         try {
-            // On fait le rendu
+            // On récupère les données depuis l'API
+            const response = await fetch(DATA_URL);
+    
+            // On vérifie si la requête a réussi
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP! Statut: ${response.status}`);
+            }
+
+            // On récupère les données
+            const data = await response.json();
+
+            // On stocke les données dans les listes
+            this.listeEntrees = data.reservationsStart;
+            this.listeSorties = data.reservationsEnd;
+
+            // On récupère le message si la clé existe
+            if (data.message) {
+                this.message.textContent = data.message;
+            }
+    
+            // Une fois les données récupérées, on met à jour l'UI
             this.renderUI();
         } catch (error) {
             console.error("Erreur lors de la récupération des données :", error);
@@ -96,6 +119,15 @@ class App {
 
         elHeader.append( elTitle );
 
+        // Si un message est présent, on l'affiche
+        if (this.message.length > 0) {
+            const elMessage = document.createElement( 'p' );
+            elMessage.classList.add( 'alert' );
+            elMessage.classList.add( 'alert-info' );
+            elMessage.textContent = this.message;
+            document.body.append( elMessage );
+        }
+
         const elMain = document.createElement( 'main' );
 
         const elTitleEntrees = document.createElement( 'h2' );
@@ -125,6 +157,38 @@ class App {
 
         const elTbodyEntrees = document.createElement( 'tbody' );
         elTbodyEntrees.id = 'liste-entrees';
+
+        // On ajoute les lignes du tableau
+        this.listeEntrees.forEach( entree => {
+            const elTr = document.createElement( 'tr' );
+
+            let proprete = entree.isClean == 1 ? 'propre' : 'sale';
+            let dateStart = entree.dateStart.date.split('.')[0];
+            let dateEnd = entree.dateEnd.date.split('.')[0];
+
+            elTr.innerHTML = `
+                <td>${dateStart}</td>
+                <td>${dateEnd}</td>
+                <td>${entree.firstname} <br> ${entree.lastname}</td>
+                <td>n°${entree.location}</td>
+                <td>${proprete}</td>
+            `;
+
+            if(entree.isClean == 0) {
+                elTr.innerHTML += `
+                    <td>
+                        <button id="check-button-in" class="btn btn-primary">Check</button>
+                    </td>
+                `;
+
+                const elBtnCheckIn = elTr.querySelector( '#check-button-in' );
+                const idIn = entree.roomId;
+                elBtnCheckIn.dataset.id = idIn;
+                elBtnCheckIn.addEventListener( 'click', this.handlerCheck.bind( this) );
+            }
+
+            elTbodyEntrees.append( elTr );
+        } );
 
         elTableEntrees.append( elTheadEntrees, elTbodyEntrees );
         elMain.append( elTableEntrees );
@@ -157,6 +221,38 @@ class App {
 
         const elTbodySorties = document.createElement( 'tbody' );
         elTbodySorties.id = 'liste-sorties';
+
+        // On ajoute les lignes du tableau
+        this.listeSorties.forEach( sortie => {
+            const elTr = document.createElement( 'tr' );
+
+            let proprete = sortie.isClean == 1 ? 'propre' : 'sale';
+            let dateStart = sortie.dateStart.date.split('.')[0];
+            let dateEnd = sortie.dateEnd.date.split('.')[0];
+
+            elTr.innerHTML = `
+                <td>${dateStart}</td>
+                <td>${dateEnd}</td>
+                <td>${sortie.firstname} <br> ${sortie.lastname}</td>
+                <td>n°${sortie.location}</td>
+                <td>${proprete}</td>
+            `;
+            
+            if(sortie.isClean == 0) {
+                elTr.innerHTML += `
+                    <td>
+                        <button id="check-button-out" class="btn btn-primary">Check</button>
+                    </td>
+                `;
+
+                const elBtnCheckOut = elTr.querySelector( '#check-button-out' );
+                const idOut = sortie.roomId;
+                elBtnCheckOut.dataset.id = idOut;
+                elBtnCheckOut.addEventListener( 'click', this.handlerCheck.bind( this) );
+            }
+
+            elTbodySorties.append( elTr );
+        } );
 
         elTableSorties.append( elTheadSorties, elTbodySorties );
         elMain.append( elTableSorties );
