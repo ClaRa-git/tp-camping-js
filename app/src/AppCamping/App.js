@@ -259,6 +259,14 @@ class App {
 
         document.body.append( elHeader, elMain );
     }
+
+    /**
+     * Gestionnaire de l'événement 'Check'
+     * @param {Event} event 
+     */
+    handlerCheck( event ) {
+        console.log( 'Check' );
+    }
 }
 
 const app = new App();
