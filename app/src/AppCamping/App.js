@@ -133,6 +133,7 @@ renderTable(elMain, id, datas) {
                 <th>Date d'entrée</th>
                 <th>Date de sortie</th>
                 <th>Client</th>
+                <th>Type</th>
                 <th>Emplacement</th>
                 <th>Propreté</th>
                 <th>Actions</th>
@@ -158,6 +159,7 @@ renderTable(elMain, id, datas) {
                 <td>${dateStart}</td>
                 <td>${dateEnd}</td>
                 <td>${data.firstname} <br> ${data.lastname}</td>
+                <td>${data.type}</td>
                 <td>n°${data.location}</td>
                 <td>${proprete}</td>
             `;
