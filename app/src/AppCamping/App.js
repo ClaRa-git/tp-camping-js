@@ -121,51 +121,58 @@ handlerCheck( event ) {
 }
 
 renderTable(elMain, id, datas) {
-        // Création du tableau
-        const elTable = document.createElement( 'table' );
-        elTable.classList.add( 'table' );
-        elTable.classList.add( 'table-bordered' );
+    // Création du tableau
+    const elTable = document.createElement( 'table' );
+    elTable.classList.add( 'table' );
+    elTable.classList.add( 'table-bordered' );
 
-        // En-tête du tableau
-        const elThead = document.createElement( 'thead' );
-        elThead.innerHTML = `
-            <tr>
-                <th>Date d'entrée</th>
-                <th>Date de sortie</th>
-                <th>Client</th>
-                <th>Type</th>
-                <th>Emplacement</th>
-                <th>Propreté</th>
-                <th>Actions</th>
-            </tr>
+    // En-tête du tableau
+    const elThead = document.createElement( 'thead' );
+    elThead.innerHTML = `
+        <tr>
+            <th>Date d'entrée</th>
+            <th>Date de sortie</th>
+            <th>Client</th>
+            <th>Type</th>
+            <th>Emplacement</th>
+            <th>Propreté</th>
+            <th>Actions</th>
+        </tr>
+    `;
+
+    // Création du corps du tableau
+    const elTbody = document.createElement( 'tbody' );
+    elTbody.id = id;
+
+    // Ajout des lignes du tableau
+    datas.forEach( data => {
+        const elTr = document.createElement( 'tr' );
+
+        let proprete = data.isClean == 1 ? 'Propre' : 'Sale';
+
+        // Coloration de la ligne en fonction de la propreté
+        if(data.isClean == 1) {
+            elTr.classList.add( 'table-success' );
+        } else {
+            elTr.classList.add( 'table-danger' );
+        }
+
+        // Formatage des dates
+        let dateStart = data.dateStart.date.split('.')[0];
+        let dateEnd = data.dateEnd.date.split('.')[0];
+
+        // Remplissage des cellules du tableau
+        elTr.innerHTML = `
+            <td>${dateStart}</td>
+            <td>${dateEnd}</td>
+            <td>${data.firstname} <br> ${data.lastname}</td>
+            <td>${data.type}</td>
+            <td>n°${data.location}</td>
+            <td>${proprete}</td>
         `;
 
-        // Création du corps du tableau
-        const elTbody = document.createElement( 'tbody' );
-        elTbody.id = id;
-
-        // Ajout des lignes du tableau
-        datas.forEach( data => {
-            const elTr = document.createElement( 'tr' );
-
-            let proprete = data.isClean == 1 ? 'Propre' : 'Sale';
-
-            // Formatage des dates
-            let dateStart = data.dateStart.date.split('.')[0];
-            let dateEnd = data.dateEnd.date.split('.')[0];
-
-            // Remplissage des cellules du tableau
-            elTr.innerHTML = `
-                <td>${dateStart}</td>
-                <td>${dateEnd}</td>
-                <td>${data.firstname} <br> ${data.lastname}</td>
-                <td>${data.type}</td>
-                <td>n°${data.location}</td>
-                <td>${proprete}</td>
-            `;
-
-            // Si la location n'est pas propre, ajout d'un bouton pour le check
-            if(data.isClean == 0) {
+        // Si la location n'est pas propre, ajout d'un bouton pour le check
+        if(data.isClean == 0) {
             const elTd = document.createElement( 'td' );
 
             const elBtnCheckIn = document.createElement( 'button' );
@@ -181,6 +188,9 @@ renderTable(elMain, id, datas) {
 
             elTd.append( elBtnCheckIn );
             elTr.append( elTd );
+        }
+        else {
+            elTr.innerHTML += '<td></td>';
         }
 
         elTbody.append( elTr );
